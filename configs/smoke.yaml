@@ -23,6 +23,10 @@ models:
     mode: fit
     family: pretrained
     params: {model_name: amazon/chronos-2, context_length: 512, prediction_length: 1, validation_size: 0.2, num_steps: 1, learning_rate: 0.00001, batch_size: 32}
+  - name: timesfm3
+    mode: zero_shot
+    family: pretrained
+    params: {model_name: google/timesfm-3.0-pytorch, context_length: 512, prediction_length: 1, batch_size: 32}
     
   - name: autoencoder
     family: reconstruction

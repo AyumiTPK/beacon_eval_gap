@@ -10,7 +10,7 @@ class ModelSpec:
     family: str = "unspecified"
 
 class DetectorPipeline:
-    """Thin adapter around the vendored TSB-AD detector implementations."""
+    """Thin adapter around the TSB-AD detector implementations."""
     def __init__(self, spec: ModelSpec, n_features: int):
         self.spec = spec
         self.model = self._build(n_features)
@@ -68,6 +68,9 @@ class DetectorPipeline:
         if name == "chronos2":
             from TSB_AD.models.Chronos2 import Chronos2
             return Chronos2(**p)
+        if name == "timesfm3":
+            from TSB_AD.models.TimesFM3 import TimesFM3
+            return TimesFM3(**p)
         raise ValueError(f"Unknown model: {self.spec.name}")
 
     def fit_reference(self, X: np.ndarray) -> None:

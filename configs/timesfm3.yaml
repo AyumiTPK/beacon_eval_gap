@@ -1,0 +1,22 @@
+dataset:
+  reference_batch_id: BEACON_SimMode_IC_Batch11_ProcessNoise_ON_MeasNoise_ON_clean
+  features:
+    - T_meas_degC
+    - pH_meas
+    - pO2_meas_pc
+    - F_air_NLh
+    - F_o2_NLh
+    - N_stirrer_rpm
+    - heating_pc
+    - cooling_pc
+
+evaluation:
+  threshold_quantile: 0.995
+  # Derived once per run as the median ground-truth anomaly-event duration across evaluation batches.
+  vus_window: null
+
+models:
+  - name: timesfm3
+    mode: zero_shot
+    family: pretrained
+    params: {model_name: google/timesfm-3.0-pytorch, context_length: 512, prediction_length: 1, batch_size: 32}

@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-foundation = ["chronos-forecasting", "transformers>=4.44"]
+foundation = ["chronos-forecasting", "transformers>=4.44", "timesfm[torch]>=3.0,<4"]
 test = ["pytest>=8,<9"]
 
 [tool.setuptools.packages.find]

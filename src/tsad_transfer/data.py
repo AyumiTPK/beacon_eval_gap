@@ -26,27 +26,58 @@ def _fault_type(path: Path, active_col: str | None) -> str:
 
 
 def load_fault_folder(folder: str | Path, feature_columns: tuple[str, ...] = DEFAULT_FEATURES) -> list[Batch]:
-    paths = sorted([*Path(folder).glob("*.csv"), *Path(folder).glob("*.xlsx"), *Path(folder).glob("*.xls")])
+    folder = Path(folder)
+    paths = sorted([
+        *folder.glob("*.csv"),
+        *folder.glob("*.xlsx"),
+        *folder.glob("*.xls"),
+    ])
     if not paths:
         raise ValueError(f"No CSV/Excel files in {folder}")
 
     batches = []
     for path in paths:
         dataframe = _read(path)
-        active_columns = [column for column in dataframe.columns if column.lower().endswith("_active")]
+        active_columns = [
+            column
+            for column in dataframe.columns
+            if column.lower().endswith("_active")
+        ]
         if len(active_columns) > 1:
             raise ValueError(f"Multiple *_active columns in {path.name}: {active_columns}")
 
         active_column = active_columns[0] if active_columns else None
-        missing = [column for column in feature_columns if column not in dataframe.columns]
+        missing = [
+            column
+            for column in feature_columns
+            if column not in dataframe.columns
+        ]
         if missing:
             raise ValueError(f"Missing features in {path.name}: {missing}")
 
-        labels = dataframe[active_column].fillna(0).astype(int).to_numpy() if active_column else np.zeros(len(dataframe), dtype=int)
+        if active_column:
+            labels = (
+                dataframe[active_column]
+                .fillna(0)
+                .astype(int)
+                .to_numpy()
+            )
+        else:
+            labels = np.zeros(len(dataframe), dtype=int)
+            
         time = dataframe["time_h"].to_numpy() if "time_h" in dataframe.columns else None
         features = dataframe[list(feature_columns)].to_numpy(float)
         metadata = {"source": str(path), "fault_type": _fault_type(path, active_column)}
-        batches.append(Batch(path.stem, features, labels, time, tuple(feature_columns), metadata))
+        
+        batch = Batch(
+            batch_id=path.stem,
+            X=features,
+            y=labels,
+            time=time,
+            feature_names=tuple(feature_columns),
+            metadata=metadata,
+        )
+        batches.append(batch)
 
     return batches
 

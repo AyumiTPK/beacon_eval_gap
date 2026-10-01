@@ -5,25 +5,59 @@ import pandas as pd
 
 def _read_many(paths):
     paths = list(paths)
-    return pd.concat([pd.read_csv(p) for p in paths], ignore_index=True) if paths else pd.DataFrame()
+    if not paths:
+        return pd.DataFrame()
+
+    return pd.concat(
+        [pd.read_csv(path) for path in paths],
+        ignore_index=True,
+    )
 
 
 def _macro(df: pd.DataFrame, group_cols: list[str], aggregation: str) -> pd.DataFrame:
     """Macro-average batch-level metric columns, excluding bookkeeping numbers."""
-    excluded = {"batch_order", "fit_seconds", "score_seconds", "threshold"}
-    numeric = [c for c in df.select_dtypes(include="number").columns if c not in excluded]
-    out = df.groupby(group_cols, as_index=False)[numeric].mean()
-    counts = df.groupby(group_cols, as_index=False).size().rename(columns={"size": "n_batches"})
-    out = out.merge(counts, on=group_cols, how="left")
-    out["aggregation"] = aggregation
-    return out
+
+    excluded = {
+        "batch_order",
+        "fit_seconds",
+        "score_seconds",
+        "threshold",
+    }
+
+    numeric_columns = df.select_dtypes(include="number").columns
+
+    metric_columns = [
+        column
+        for column in numeric_columns
+        if column not in excluded
+    ]
+
+    grouped_metrics = (
+        df.groupby(group_cols, as_index=False)[metric_columns]
+        .mean()
+    )
+
+    batch_counts = (
+        df.groupby(group_cols, as_index=False)
+        .size()
+        .rename(columns={"size": "n_batches"})
+    )
+
+    result = grouped_metrics.merge(
+        batch_counts,
+        on=group_cols,
+        how="left",
+    )
+
+    result["aggregation"] = aggregation
+    return result
 
 
 def analyze(results_dir: str | Path) -> None:
     """Create batch, fault, and overall summaries for both evaluation protocols.
 
     Independent process/simulation runs are the aggregation unit. Retrospective
-    AUC/VUS metrics are first computed per batch and then macro-averaged by fault
+    metrics are first computed per batch and then macro-averaged by fault
     and overall. Sequential deployment metrics are aggregated in the same way.
     The metric families themselves remain protocol-specific and are not treated
     as interchangeable measurements.
