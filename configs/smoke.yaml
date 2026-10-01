@@ -19,7 +19,7 @@ evaluation:
 
 models:
   - name: chronos2
-    enabled: false
+    #enabled: false
     mode: fit
     family: pretrained
     params: {model_name: amazon/chronos-2, context_length: 512, prediction_length: 1, validation_size: 0.2, num_steps: 1, learning_rate: 0.00001, batch_size: 32}

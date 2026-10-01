@@ -12,7 +12,7 @@ from .base import BaseDetector
 class Chronos2(BaseDetector):
     def __init__(
         self,
-        model_name="C:/Users/mb09212/TSB-AD/checkpoints/chronos2",
+        model_name="amazon/chronos-2",
         context_length=512, 
         prediction_length=1,
         device=None,
@@ -36,7 +36,7 @@ class Chronos2(BaseDetector):
         }
 
         self.pretrained_pipeline: Chronos2Pipeline = BaseChronosPipeline.from_pretrained(
-            model_name, device_map=self.device, local_files_only=True,
+            model_name, device_map=self.device,
         )
         self.pipeline = self.pretrained_pipeline
         self.decision_scores_ = None
