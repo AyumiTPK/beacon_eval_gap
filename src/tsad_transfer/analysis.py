@@ -54,14 +54,7 @@ def _macro(df: pd.DataFrame, group_cols: list[str], aggregation: str) -> pd.Data
 
 
 def analyze(results_dir: str | Path) -> None:
-    """Create batch, fault, and overall summaries for both evaluation protocols.
-
-    Independent process/simulation runs are the aggregation unit. Retrospective
-    metrics are first computed per batch and then macro-averaged by fault
-    and overall. Sequential deployment metrics are aggregated in the same way.
-    The metric families themselves remain protocol-specific and are not treated
-    as interchangeable measurements.
-    """
+    """Create batch, fault, and overall summaries for both evaluation protocols."""
     root = Path(results_dir)
 
     retro_batch = _read_many(root.glob("*/retrospective_metrics_by_batch.csv"))

@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import numpy as np
 
 
@@ -28,7 +27,7 @@ def contiguous_events(y: np.ndarray) -> list[tuple[int, int]]:
     return events
 
 
-def evaluate_online_metrics(
+def evaluate_deploy_metrics(
     y_true: np.ndarray,
     probability: np.ndarray,
     *,
@@ -40,11 +39,8 @@ def evaluate_online_metrics(
     Active-event detection requires at least one alarm while the ground-truth
     anomaly event is active. Detection by process end requires at least one
     alarm between anomaly onset and the end of the process. Delay is measured
-    from anomaly onset to the first qualifying alarm.
-
-    FPR is the number of false positives divided by the number of scorable
-    ground-truth-normal timestamps. NaN probabilities are unscorable and are
-    excluded from FPR, but remain part of elapsed detection delay.
+    from anomaly onset to the first qualifying alarm. FPR is the number of false positives 
+    divided by the number of scorable ground-truth-normal timestamps. 
     """
     y = np.asarray(y_true, dtype=int).reshape(-1)
     p = np.asarray(probability, dtype=float).reshape(-1)

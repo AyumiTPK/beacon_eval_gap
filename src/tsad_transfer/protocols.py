@@ -5,7 +5,7 @@ from pathlib import Path
 import time
 import numpy as np
 import pandas as pd
-from .online_metrics import binary_predictions, contiguous_events, evaluate_online_metrics
+from .deployment_metrics import binary_predictions, contiguous_events, evaluate_deploy_metrics
 from .models import DetectorPipeline, ModelSpec
 from .retrospective_metrics import evaluate_retrospective_metrics
 from .types import Batch
@@ -107,7 +107,7 @@ def run_model(
         }))
 
         prediction = binary_predictions(score, threshold)
-        sequential = evaluate_online_metrics(
+        sequential = evaluate_deploy_metrics(
             batch.y,
             score,
             threshold=threshold,

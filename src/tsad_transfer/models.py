@@ -10,7 +10,7 @@ class ModelSpec:
     family: str = "unspecified"
 
 class DetectorPipeline:
-    """Thin adapter around the TSB-AD detector implementations."""
+    """Adapter around the TSB-AD detector implementations."""
     def __init__(self, spec: ModelSpec, n_features: int):
         self.spec = spec
         self.model = self._build(n_features)
