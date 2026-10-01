@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+results/
+checkpoints/
+.DS_Store
+CHANGELOG.md
+TSB_AD_PATCHES.md
+*.egg-info/
+data/

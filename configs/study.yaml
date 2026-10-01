@@ -1,0 +1,80 @@
+dataset:
+  reference_batch_id: BEACON_SimMode_IC_Batch11_ProcessNoise_ON_MeasNoise_ON_clean
+  features:
+    - T_meas_degC
+    - pH_meas
+    - pO2_meas_pc
+    - F_air_NLh
+    - F_o2_NLh
+    - N_stirrer_rpm
+    - heating_pc
+    - cooling_pc
+
+evaluation:
+  threshold_quantile: 0.995
+  # Derived once per run as the median ground-truth anomaly-event duration across evaluation batches.
+  vus_window: null
+
+# Model selection was fixed a priori by methodological family, not target-data performance.
+models:
+  # Contemporary pretrained time-series models
+  - name: chronos2
+    mode: fit
+    family: pretrained
+    params: {model_name: amazon/chronos-2, context_length: 512, prediction_length: 1, learning_rate: 0.00001, batch_size: 32}
+
+  # Reconstruction-based
+  - name: autoencoder
+    family: reconstruction
+    params: {hidden_neurons: [128, 64], epochs: 50, batch_size: 128}
+  - name: usad
+    family: reconstruction
+    params: {win_size: 5, epochs: 10, batch_size: 128, lr: 0.0001}
+
+  # Forecasting-based
+  - name: lstmad
+    family: forecasting
+    params: {window_size: 150, lr: 0.0008, epochs: 50, batch_size: 128}
+  - name: cnn
+    family: forecasting
+    params: {window_size: 100, pred_len: 1, lr: 0.0008, epochs: 50, batch_size: 128}
+
+  # Encoding-based
+  - name: pca
+    family: encoding
+    params: {n_components: 0.25}
+  - name: robustpca
+    family: encoding
+    params: {max_iter: 1000, zero_pruning: false}
+
+  # Tree-based
+  - name: iforest
+    family: tree
+    params: {slidingWindow: 100, n_estimators: 100, random_state: 0}
+  - name: eif
+    family: tree
+    params: {n_trees: 100, max_samples: null, extension_level: null}
+
+  # Distribution-based
+  - name: mcd
+    family: distribution
+    params: {support_fraction: 0.8}
+  - name: ocsvm
+    family: distribution
+    params: {kernel: rbf, nu: 0.1}
+
+  # Clustering-based
+  - name: kmeansad
+    family: clustering
+    params: {n_clusters: 10, window_size: 40, stride: 1}
+  - name: cblof
+    family: clustering
+    params: {n_clusters: 8, random_state: 0}
+
+  # Proximity-based
+  - name: knn
+    family: proximity
+    params: {slidingWindow: 100, n_neighbors: 10, method: largest}
+  - name: lof
+    family: proximity
+    params: {slidingWindow: 100, n_neighbors: 20, novelty: true}
