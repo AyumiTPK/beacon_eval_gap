@@ -13,11 +13,11 @@ The same trained detectors are used for both evaluation protocols.
 
 ## Detector set
 
-Model selection is fixed a priori by methodological coverage rather than target-dataset performance. The study contains 15 detectors:
+Model selection is fixed a priori by methodological coverage rather than target-dataset performance. The study contains 16 detectors:
 
 | Group | Detectors |
 |---|---|
-| Contemporary pretrained | Chronos2-FT |
+| Contemporary pretrained | Chronos2 (fine-tuned), TimesFM3 (zero-shot) |
 | Reconstruction-based | AutoEncoder, USAD |
 | Forecasting-based | LSTMAD, CNN |
 | Encoding-based | PCA, RobustPCA |
@@ -26,7 +26,7 @@ Model selection is fixed a priori by methodological coverage rather than target-
 | Clustering-based | KMeansAD, CBLOF |
 | Proximity-based | KNN, LOF |
 
-The detector source files are based on the supplied TSB-AD implementations. The study layer provides configuration, protocol orchestration, metric computation, and analysis, while the detector adaptations required for causal evaluation are documented in `TSB_AD_PATCHES.md`.
+The detector source files are based on the TSB-AD implementations. 
 
 ## Data
 

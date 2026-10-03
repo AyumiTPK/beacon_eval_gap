@@ -11,6 +11,9 @@ from .retrospective_metrics import evaluate_retrospective_metrics
 from .types import Batch
 
 
+SENSITIVITY_QUANTILES = (0.990, 0.995, 0.999)
+
+
 def _threshold(scores: np.ndarray, quantile: float) -> float:
     finite_scores = np.asarray(scores, dtype=float)
     finite_scores = finite_scores[np.isfinite(finite_scores)]
@@ -53,8 +56,12 @@ def run_model(
     fit_seconds = time.perf_counter() - start
 
     reference_scores = model.score(reference.X)
+    sensitivity_thresholds = {
+        quantile: _threshold(reference_scores, quantile)
+        for quantile in SENSITIVITY_QUANTILES
+    }
     threshold = _threshold(reference_scores, threshold_quantile)
-    
+
     reference_scores_df = pd.DataFrame({
         "model": spec.name,
         "family": spec.family,
@@ -89,6 +96,7 @@ def run_model(
             "batch_id": batch.batch_id,
             "batch_order": batch_order,
             "fault_type": fault_type,
+            "is_labeled_normal": batch.is_labeled_normal,
             "fit_seconds": fit_seconds,
             "score_seconds": score_seconds,
             "threshold": np.nan,
@@ -101,6 +109,7 @@ def run_model(
             "batch_id": batch.batch_id,
             "batch_order": batch_order,
             "fault_type": fault_type,
+            "is_labeled_normal": batch.is_labeled_normal,
             "timestamp_index": np.arange(len(batch.X)),
             "y_true": batch.y,
             "score": score,
@@ -121,6 +130,7 @@ def run_model(
             "batch_id": batch.batch_id,
             "batch_order": batch_order,
             "fault_type": fault_type,
+            "is_labeled_normal": batch.is_labeled_normal,
             "fit_seconds": fit_seconds,
             "score_seconds": score_seconds,
             "threshold": threshold,
@@ -133,7 +143,9 @@ def run_model(
             "batch_id": batch.batch_id,
             "batch_order": batch_order,
             "fault_type": fault_type,
+            "is_labeled_normal": batch.is_labeled_normal,
             "timestamp_index": np.arange(len(batch.X)),
+            "time": batch.time if batch.time is not None else np.full(len(batch.X), np.nan),
             "y_true": batch.y,
             "score": score,
             "prediction": prediction,
@@ -145,7 +157,7 @@ def run_model(
     retrospective_scores_df = pd.concat(retrospective_score_frames, ignore_index=True)
     sequential_scores_df = pd.concat(sequential_score_frames, ignore_index=True)
 
-    excluded = {"batch_order", "fit_seconds", "score_seconds", "threshold"}
+    excluded = {"batch_order", "fit_seconds", "score_seconds", "threshold", "is_labeled_normal"}
     metric_cols = [
         column
         for column in retrospective_df.select_dtypes(include="number").columns
@@ -187,6 +199,11 @@ def run_model(
         "model": asdict(spec),
         "threshold_quantile": threshold_quantile,
         "threshold": threshold,
+        "sensitivity_quantiles": list(SENSITIVITY_QUANTILES),
+        "sensitivity_thresholds": {
+            str(quantile): value
+            for quantile, value in sensitivity_thresholds.items()
+        },
         "evaluation_unit": "batch",
         "retrospective_aggregation": "macro_from_batch_metrics",
         "sequential_aggregation": "macro_from_batch_metrics",
