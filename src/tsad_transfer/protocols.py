@@ -82,6 +82,15 @@ def run_model(
         start = time.perf_counter()
         score = model.score(batch.X)
         score_seconds = time.perf_counter() - start
+        
+        print(
+            f"[DEBUG] batch={batch.batch_id}, "
+            f"fault_type={fault_type}, "
+            f"n={len(batch.y)}, "
+            f"anomalies={int(np.sum(batch.y == 1))}, "
+            f"finite_scores={int(np.isfinite(score).sum())}, "
+            f"scorable_anomalies={int(np.sum(batch.y[np.isfinite(score)] == 1))}"
+        )
 
         retrospective = evaluate_retrospective_metrics(
             batch.y,
