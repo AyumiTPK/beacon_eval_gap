@@ -1,0 +1,24 @@
+dataset:
+  reference_batch_id: BEACON_SimMode_IC_Batch11_ProcessNoise_ON_MeasNoise_ON_clean
+  features:
+    - T_meas_degC
+    - pH_meas
+    - pO2_meas_pc
+    - F_air_NLh
+    - F_o2_NLh
+    - N_stirrer_rpm
+    - heating_pc
+    - cooling_pc
+
+evaluation:
+  threshold_quantile: 0.995
+  # Derived once per run as the median ground-truth anomaly-event duration across evaluation batches.
+  vus_window: null
+
+# Model selection was fixed a priori by methodological family, not target-data performance.
+models:
+
+  # Tree-based
+  - name: iforest
+    family: tree
+    params: {slidingWindow: 100, n_estimators: 100, random_state: 0}

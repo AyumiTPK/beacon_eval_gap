@@ -25,6 +25,7 @@ def _macro(df: pd.DataFrame, group_cols: list[str], aggregation: str) -> pd.Data
         "threshold",
         "threshold_quantile",
         "is_labeled_normal",
+        "retrospective_evaluable",
     }
     numeric_columns = df.select_dtypes(include="number").columns
     metric_columns = [
@@ -39,6 +40,17 @@ def _macro(df: pd.DataFrame, group_cols: list[str], aggregation: str) -> pd.Data
         .rename(columns={"size": "n_batches"})
     )
     result = grouped_metrics.merge(batch_counts, on=group_cols, how="left")
+    
+    if "retrospective_evaluable" in df.columns:
+        evaluable_counts = (
+            df.groupby(group_cols, as_index=False)["retrospective_evaluable"]
+            .sum()
+            .rename(columns={
+                "retrospective_evaluable": "n_retrospective_evaluable"
+            })
+        )
+        result = result.merge(evaluable_counts, on=group_cols, how="left")
+    
     result["aggregation"] = aggregation
     return result
 

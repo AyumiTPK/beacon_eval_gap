@@ -166,7 +166,13 @@ def run_model(
     retrospective_scores_df = pd.concat(retrospective_score_frames, ignore_index=True)
     sequential_scores_df = pd.concat(sequential_score_frames, ignore_index=True)
 
-    excluded = {"batch_order", "fit_seconds", "score_seconds", "threshold", "is_labeled_normal"}
+    excluded = {
+        "batch_order",
+        "fit_seconds",
+        "score_seconds",
+        "threshold",
+        "retrospective_evaluable",
+    }
     metric_cols = [
         column
         for column in retrospective_df.select_dtypes(include="number").columns
@@ -180,8 +186,10 @@ def run_model(
     retrospective_by_fault["aggregation"] = "macro_batches_by_fault"
     batch_counts = (
         retrospective_df.groupby(["model", "family", "fault_type"], as_index=False)
-        .size()
-        .rename(columns={"size": "n_batches"})
+        .agg(
+            n_batches=("batch_id", "size"),
+            n_retrospective_evaluable=("retrospective_evaluable", "sum"),
+        )
     )
     retrospective_by_fault = retrospective_by_fault.merge(
         batch_counts,

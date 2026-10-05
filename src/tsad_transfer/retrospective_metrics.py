@@ -18,8 +18,21 @@ def evaluate_retrospective_metrics(
     scores = scores[scorable]
     if not len(scores):
         raise ValueError("No finite anomaly scores")
+
+    scorable_fraction = float(np.mean(scorable))
     if len(np.unique(labels)) < 2:
-        raise ValueError("Retrospective metrics require both normal and anomalous labels")
+        return {
+            "AUC-ROC": np.nan,
+            "AUC-PR": np.nan,
+            "Point-F1": np.nan,
+            "Range-F1": np.nan,
+            "Point-F1-PA": np.nan,
+            "Event-F1-PA": np.nan,
+            "VUS-ROC": np.nan,
+            "VUS-PR": np.nan,
+            "scorable_fraction": scorable_fraction,
+            "retrospective_evaluable": False,
+        }
 
     metric_calculator = basic_metricor()
     curve_results = generate_curve(labels, scores, sliding_window, "opt", 250)
@@ -35,5 +48,6 @@ def evaluate_retrospective_metrics(
         "Event-F1-PA": metric_calculator.metric_EventF1PA(labels, scores),
         "VUS-ROC": vus_roc,
         "VUS-PR": vus_pr,
-        "scorable_fraction": float(np.mean(scorable)),
+        "scorable_fraction": scorable_fraction,
+        "retrospective_evaluable": True,
     }
