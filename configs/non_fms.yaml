@@ -30,16 +30,20 @@ models:
     params: {model_name: google/timesfm-3.0-pytorch, context_length: 512, prediction_length: 1, batch_size: 32}
     
   - name: autoencoder
+    enabled: false
     family: reconstruction
     params: {hidden_neurons: [128, 64], epochs: 1, batch_size: 128}
   - name: usad
+    enabled: false
     family: reconstruction
     params: {win_size: 5, epochs: 1, batch_size: 128, lr: 0.0001}
 
   - name: lstmad
+    enabled: false
     family: forecasting
     params: {window_size: 150, lr: 0.0008, epochs: 1, batch_size: 128}
   - name: cnn
+    enabled: false
     family: forecasting
     params: {window_size: 100, pred_len: 1, lr: 0.0008, epochs: 1, batch_size: 128}
 
@@ -58,22 +62,28 @@ models:
     params: {n_trees: 100, max_samples: null, extension_level: null}
 
   - name: mcd
+    enabled: false
     family: distribution
     params: {support_fraction: 0.8}
   - name: ocsvm
+    enabled: false
     family: distribution
     params: {kernel: rbf, nu: 0.1}
 
   - name: kmeansad
+    enabled: false
     family: clustering
     params: {n_clusters: 10, window_size: 40, stride: 1}
   - name: cblof
+    enabled: false
     family: clustering
     params: {n_clusters: 8, random_state: 0}
 
   - name: knn
+    enabled: false
     family: proximity
     params: {slidingWindow: 100, n_neighbors: 10, method: largest}
   - name: lof
+    enabled: false
     family: proximity
     params: {slidingWindow: 100, n_neighbors: 20, novelty: true}
