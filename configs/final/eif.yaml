@@ -13,7 +13,7 @@ dataset:
 evaluation:
   threshold_quantile: 0.995
   # Derived once per run as the median ground-truth anomaly-event duration across evaluation batches.
-  vus_window: null
+  vus_window: 100
 
 # Model selection was fixed a priori by methodological family, not target-data performance.
 models:

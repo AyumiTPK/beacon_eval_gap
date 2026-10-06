@@ -10,3 +10,6 @@ TSB_AD_PATCHES.md
 *.egg-info/
 data/
 chronos-2-finetuned/
+logs/
+PROJECT_REPORT.md
+temp/

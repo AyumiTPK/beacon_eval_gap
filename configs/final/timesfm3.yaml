@@ -13,7 +13,7 @@ dataset:
 evaluation:
   threshold_quantile: 0.995
   # Derived once per run as the median ground-truth anomaly-event duration across evaluation batches.
-  vus_window: null
+  vus_window: 100
 
 models:
   - name: timesfm3

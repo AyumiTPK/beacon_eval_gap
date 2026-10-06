@@ -79,12 +79,13 @@ def run_model(
 
     for batch_order, batch in enumerate(evaluation):
         fault_type = batch.metadata.get("fault_type", "unknown")
+
         start = time.perf_counter()
         score = model.score(batch.X)
         score_seconds = time.perf_counter() - start
-        
+
         print(
-            f"[DEBUG] batch={batch.batch_id}, "
+            f"batch={batch.batch_id}, "
             f"fault_type={fault_type}, "
             f"n={len(batch.y)}, "
             f"anomalies={int(np.sum(batch.y == 1))}, "
@@ -92,11 +93,14 @@ def run_model(
             f"scorable_anomalies={int(np.sum(batch.y[np.isfinite(score)] == 1))}"
         )
 
+        start = time.perf_counter()
         retrospective = evaluate_retrospective_metrics(
             batch.y,
             score,
             sliding_window,
         )
+        retrospective_seconds = time.perf_counter() - start
+
         retrospective.update({
             "model": spec.name,
             "family": spec.family,
@@ -108,9 +112,11 @@ def run_model(
             "is_labeled_normal": batch.is_labeled_normal,
             "fit_seconds": fit_seconds,
             "score_seconds": score_seconds,
+            "retrospective_seconds": retrospective_seconds,
             "threshold": np.nan,
         })
         retrospective_rows.append(retrospective)
+
         retrospective_score_frames.append(pd.DataFrame({
             "model": spec.name,
             "family": spec.family,
@@ -125,12 +131,23 @@ def run_model(
         }))
 
         prediction = binary_predictions(score, threshold)
+
+        start = time.perf_counter()
         sequential = evaluate_deploy_metrics(
             batch.y,
             score,
             threshold=threshold,
             time=batch.time,
         )
+        deployment_seconds = time.perf_counter() - start
+
+        print(
+            f"[TIMING] {spec.name} | {batch.batch_id} | "
+            f"score={score_seconds:.1f}s | "
+            f"retrospective={retrospective_seconds:.1f}s | "
+            f"deployment={deployment_seconds:.1f}s"
+        )
+
         sequential.update({
             "model": spec.name,
             "family": spec.family,
@@ -142,6 +159,7 @@ def run_model(
             "is_labeled_normal": batch.is_labeled_normal,
             "fit_seconds": fit_seconds,
             "score_seconds": score_seconds,
+            "deployment_seconds": deployment_seconds,
             "threshold": threshold,
         })
         sequential_rows.append(sequential)
@@ -170,7 +188,10 @@ def run_model(
         "batch_order",
         "fit_seconds",
         "score_seconds",
+        "retrospective_seconds",
+        "deployment_seconds",
         "threshold",
+        "is_labeled_normal",
         "retrospective_evaluable",
     }
     metric_cols = [

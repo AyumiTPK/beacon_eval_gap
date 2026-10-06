@@ -12,6 +12,7 @@ data/
 results/
 checkpoints/
 temp/
+logs/
 chronos-2-finetuned/
 
 .git/
