@@ -9,6 +9,17 @@ from .deployment_metrics import binary_predictions, contiguous_events, evaluate_
 from .models import DetectorPipeline, ModelSpec
 from .retrospective_metrics import evaluate_retrospective_metrics
 from .types import Batch
+import random
+import torch
+
+seed = 42
+
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(seed)
 
 
 SENSITIVITY_QUANTILES = (0.990, 0.995, 0.999)
