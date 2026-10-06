@@ -24,10 +24,9 @@ def main():
 
     evaluation_config = config["evaluation"]
     evaluation_config["vus_window"] = resolve_vus_window(evaluation, evaluation_config.get("vus_window"))
-
+    
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
-    (output / "resolved_config.json").write_text(json.dumps(config, indent=2))
 
     manifest = pd.DataFrame([
         {
@@ -50,6 +49,7 @@ def main():
             output,
             evaluation_config["threshold_quantile"],
             evaluation_config["vus_window"],
+            config=config,
         )
 
     analyze(output)

@@ -45,10 +45,13 @@ def run_model(
     out_dir: str | Path,
     threshold_quantile: float = 0.995,
     sliding_window: int = 100,
+    config: dict | None = None,
 ):
     """Fit on the reference batch and evaluate each test batch independently."""
     out = Path(out_dir) / spec.name
     out.mkdir(parents=True, exist_ok=True)
+    if config is not None:
+        (out / "resolved_config.json").write_text(json.dumps(config, indent=2))
 
     model = DetectorPipeline(spec, reference.X.shape[1])
     start = time.perf_counter()
