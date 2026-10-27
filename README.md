@@ -60,6 +60,15 @@ python scripts/run_study.py \
 
 The full publication run evaluates all 16 configured detectors. 
 
+## Operational detection quality analysis
+
+After completing the main benchmark, run the supplementary analysis:
+
+```bash
+python scripts/analyze_detection_quality.py \
+  --results results/main \
+  --output results/operational_quality
+```
 
 ## TSB-AD
 

@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 results/
 checkpoints/
+visualization/
 .DS_Store
 CHANGELOG.md
 TSB_AD_PATCHES.md
