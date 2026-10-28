@@ -35,12 +35,6 @@ def evaluate_deploy_metrics(
     time: np.ndarray | None = None,
 ) -> dict:
     """Event detection rates, first-detection delays, and point FPR.
-
-    Active-event detection requires at least one alarm while the ground-truth
-    anomaly event is active. Detection by process end requires at least one
-    alarm between anomaly onset and the end of the process. Delay is measured
-    from anomaly onset to the first qualifying alarm. FPR is the number of false positives 
-    divided by the number of scorable ground-truth-normal timestamps. 
     """
     y = np.asarray(y_true, dtype=int).reshape(-1)
     p = np.asarray(probability, dtype=float).reshape(-1)
