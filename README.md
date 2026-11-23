@@ -30,7 +30,7 @@ The detector source files are based on the TSB-AD implementations.
 
 ## Data
 
-The dataset is not included. Place the batch CSV/XLSX/XLS files directly in a local data directory. The configured reference batch is:
+The configured reference batch is:
 
 `BEACON_SimMode_IC_Batch11_ProcessNoise_ON_MeasNoise_ON_clean`
 
